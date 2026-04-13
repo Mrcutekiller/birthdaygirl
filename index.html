@@ -457,42 +457,36 @@
           <div class="section-header">
             <div class="section-icon" style="text-shadow: 0 0 15px rgba(200, 100, 255, 0.8);">🔮</div>
             <h2 class="section-title">See Your Future</h2>
-            <p class="section-sub">Choose how you want to reveal it...</p>
+            <p class="section-sub">Upload your picture to reveal your future...</p>
           </div>
           <div class="future-options">
-            <button class="future-btn glass-card" onclick="startFingerprint()">
-              <div class="future-icon">👆</div>
-              <div class="future-text">Scan Your Fingerprint</div>
-            </button>
-            <div style="position: relative;">
+            <div style="position: relative; width: 100%; display: flex; justify-content: center;">
               <input type="file" id="futurePhotoUpload" accept="image/*" class="hidden" onchange="handleFuturePhoto(event)">
               <button class="future-btn glass-card" onclick="document.getElementById('futurePhotoUpload').click()">
                 <div class="future-icon">📷</div>
-                <div class="future-text">Upload Your Photo</div>
+                <div class="future-text">Upload Image</div>
               </button>
             </div>
           </div>
         </div>
 
         <div id="futureScanningView" class="future-view hidden">
-          <div class="time-travel-container">
-            <div class="earth-spin">🌍</div>
-            <div class="year-counter" id="futureYearCounter">2024</div>
+          <div class="future-preview-frame" id="futurePreviewFrame">
+            <img id="futurePhotoPreview" src="" alt="preview">
           </div>
-
-          <div class="fingerprint-scanner" id="fingerprintScanner">
-            <div class="fp-icon">👆</div>
-            <div class="fp-line line-anim"></div>
-          </div>
-          <div class="photo-scanner hidden" id="photoScanner">
+          <div class="photo-scanner" id="photoScanner" style="margin-top:2rem;">
             <div class="ps-spinner"></div>
           </div>
-          <p class="scanning-text" id="scanningText">Accelerating time...</p>
+          <p class="scanning-text" id="scanningText">Analyzing your future... ✨</p>
         </div>
 
         <div id="futureResultView" class="future-view hidden">
           <div class="future-message-container" id="futureMessageContainer">
             <!-- Messages added by JS -->
+          </div>
+          <div class="future-actions hidden" id="futureActionBtns" style="text-align: center; margin-top: 2rem;">
+            <button class="btn-enter" onclick="resetFuture()" style="margin-bottom: 1rem; width: 100%; max-width: 300px;">Show again 🔁</button><br/>
+            <button class="btn-enter" onclick="showSection('home')" style="width: 100%; max-width: 300px;">Back to menu ⬅️</button>
           </div>
         </div>
 

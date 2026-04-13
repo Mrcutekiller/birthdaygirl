@@ -2705,34 +2705,22 @@ body::before {
   color: var(--pink-900);
 }
 
-.time-travel-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 1rem;
-  animation: TimeWarpShake 0.1s infinite alternate;
+.future-preview-frame {
+  width: 200px;
+  height: 200px;
+  margin: 2rem auto;
+  border-radius: 20px;
+  border: 3px solid rgba(255,255,255,0.6);
+  box-shadow: 0 0 30px rgba(255,102,178,0.5), inset 0 0 20px rgba(255,255,255,0.2);
+  overflow: hidden;
+  position: relative;
+  animation: glowPulse 2s infinite alternate;
 }
-.earth-spin {
-  font-size: 4rem;
-  animation: spinFast 0.5s linear infinite;
-  filter: blur(1px) drop-shadow(0 0 20px #a1c4fd);
-}
-.year-counter {
-  font-family: var(--font-main);
-  font-size: 3.5rem;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 0 15px #ff66b2, 0 0 30px #d4a5ff;
-  letter-spacing: 5px;
-  margin-top: 0.5rem;
-}
-@keyframes spinFast {
-  100% { transform: rotate(360deg); }
-}
-@keyframes TimeWarpShake {
-  0% { transform: translate(-1px, 1px); }
-  100% { transform: translate(1px, -1px); }
+#futurePhotoPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .fingerprint-scanner {

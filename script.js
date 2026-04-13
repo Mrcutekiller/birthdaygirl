@@ -1325,85 +1325,54 @@ function initReasonsGrid() {
 const FUTURE_LINES = [
   "Nuhamin… 💖",
   "I looked into your future…",
-  "And something beautiful showed up.",
-  "I see you… smiling.",
-  "Not just any smile…",
-  "The kind of smile you only give when you feel safe… when you feel loved.",
-  "I see a peaceful moment…",
-  "A quiet room… soft light… and you sitting there, happy.",
-  "And guess what?",
-  "I’m there too.",
-  "Not far… not watching…",
+  "And I saw something beautiful.",
+  "I saw you smiling… peacefully… happily…",
+  "A version of you that feels loved, safe, and calm.",
+  "And then I saw something else…",
+  "I saw someone walking beside you.",
+  "Not in front… not behind…",
   "Right next to you.",
-  "Laughing with you… annoying you a little…",
-  "But never leaving your side.",
-  "I see us growing…",
-  "Through everything.",
-  "The good days… the hard days…",
-  "Still choosing each other every single time.",
-  "And one day…",
-  "It’s not just a dream anymore.",
-  "It’s real.",
-  "You… and me…",
-  "Together.",
-  "Not just for a moment…",
-  "But for a lifetime ❤️",
-  "So if you were wondering what your future looks like…",
-  "Now you know.",
-  "It looks like… us ✨"
+  "Through every moment… every chapter… every dream.",
+  "I saw laughter… late night talks… shared memories…",
+  "And a bond that doesn’t fade with time.",
+  "Your future looks warm…",
+  "Like a place where your heart finally rests.",
+  "And if you’re wondering what it all means…",
+  "It means you are not alone in your story.",
+  "Not now… not later… not ever ❤️",
+  "Because some futures are not just seen…",
+  "They are shared ✨"
 ];
-
-function startTimeWarp(textEl, message) {
-  textEl.textContent = message;
-  const yearEl = document.getElementById('futureYearCounter');
-  let currentYear = new Date().getFullYear();
-  yearEl.textContent = currentYear;
-  yearEl.style.fontSize = "3.5rem"; // Reset size just in case
-  
-  const targetYear = currentYear + 65; 
-  let yearInterval = setInterval(() => {
-    currentYear += Math.floor(Math.random() * 4) + 1;
-    if (currentYear > targetYear) {
-      clearInterval(yearInterval);
-      yearEl.textContent = "Forever ❤️";
-      yearEl.style.fontSize = "2.4rem";
-      textEl.textContent = "Destination reached...";
-    } else {
-      yearEl.textContent = currentYear;
-    }
-  }, 60);
-
-  setTimeout(triggerFutureReveal, 5000);
-}
-
-function startFingerprint() {
-  document.getElementById('futureChoiceView').classList.add('hidden');
-  const scanView = document.getElementById('futureScanningView');
-  const fpIcon = document.getElementById('fingerprintScanner');
-  const photoIcon = document.getElementById('photoScanner');
-  const text = document.getElementById('scanningText');
-  
-  scanView.classList.remove('hidden');
-  fpIcon.classList.remove('hidden');
-  photoIcon.classList.add('hidden');
-  
-  startTimeWarp(text, "Scanning & analyzing timeline...");
-}
 
 function handleFuturePhoto(e) {
   if (!e.target.files || e.target.files.length === 0) return;
   
-  document.getElementById('futureChoiceView').classList.add('hidden');
-  const scanView = document.getElementById('futureScanningView');
-  const fpIcon = document.getElementById('fingerprintScanner');
-  const photoIcon = document.getElementById('photoScanner');
-  const text = document.getElementById('scanningText');
+  const file = e.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    document.getElementById('futureChoiceView').classList.add('hidden');
+    const scanView = document.getElementById('futureScanningView');
+    
+    // Set the image source
+    const preview = document.getElementById('futurePhotoPreview');
+    preview.src = event.target.result;
+    
+    scanView.classList.remove('hidden');
+    
+    // Delay 4 seconds then reveal
+    setTimeout(triggerFutureReveal, 4000);
+  };
   
-  scanView.classList.remove('hidden');
-  fpIcon.classList.add('hidden');
-  photoIcon.classList.remove('hidden');
-  
-  startTimeWarp(text, "Processing timeline...");
+  reader.readAsDataURL(file);
+}
+
+function resetFuture() {
+  document.getElementById('futureResultView').classList.add('hidden');
+  document.getElementById('futureChoiceView').classList.remove('hidden');
+  document.getElementById('futureMessageContainer').innerHTML = '';
+  const actionBtns = document.getElementById('futureActionBtns');
+  if (actionBtns) actionBtns.classList.add('hidden');
 }
 
 function triggerFutureReveal() {
@@ -1452,4 +1421,19 @@ function triggerFutureReveal() {
       delay += 1800;
     }
   });
+
+  // Unhide buttons slightly after the final message appears
+  setTimeout(() => {
+    const actionBtns = document.getElementById('futureActionBtns');
+    if (actionBtns) {
+      actionBtns.classList.remove('hidden');
+      actionBtns.style.opacity = '0';
+      actionBtns.style.transition = 'opacity 2s ease';
+      
+      // Trigger reflow
+      void actionBtns.offsetWidth;
+      actionBtns.style.opacity = '1';
+      actionBtns.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, delay + 1000);
 }
