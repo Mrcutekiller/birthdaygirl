@@ -1204,13 +1204,19 @@ document.addEventListener('keydown', (e) => {
    INIT ON DOM READY
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  createFloatingHearts();
-  
-  // Create stars for the landing background
-  createLandingStars();
+  // Spawn hearts & stars straight away so landing screen feels alive
+  initHearts();
+  initStars();
 
-  // Show "write your own message" if any exists from past visits
-  displaySavedMessages();
+  // Pre-init carousel dots and other lightweight things
+  initCarouselDots();
+  initMemorySwipe();
+  initVibeEmojis();
+  startCarouselTimer();
+  initMusic();
+
+  // Scroll-based nav highlight (no-op now without nav bar)
+  window.addEventListener('scroll', () => {});
 });
 
 /* ============================================================
@@ -1311,6 +1317,7 @@ function initReasonsGrid() {
   });
   
   reasonsInited = true;
+}
 
 /* ============================================================
    SEE YOUR FUTURE 🔮
