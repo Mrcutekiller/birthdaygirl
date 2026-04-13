@@ -1414,7 +1414,19 @@ function resetFuture() {
   if (actionBtns) actionBtns.classList.add('hidden');
 }
 
-function triggerFutureReveal() {
+// Helper for sleep
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+async function typeWriterEffect(element, text, speed) {
+  element.classList.add('f-visible');
+  element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  for (let i = 0; i < text.length; i++) {
+      element.textContent += text.charAt(i);
+      await sleep(speed);
+  }
+}
+
+async function triggerFutureReveal() {
   document.getElementById('futureScanningView').classList.add('hidden');
   document.getElementById('futureAnalysisScene').classList.add('hidden');
   document.getElementById('futureResultView').classList.remove('hidden');
@@ -1440,39 +1452,33 @@ function triggerFutureReveal() {
     osc.stop(ctx.currentTime + 4);
   } catch(e) {}
   
-  let delay = 500;
+  await sleep(1000);
   
-  FUTURE_LINES.forEach((line) => {
+  for (const line of FUTURE_LINES) {
     const p = document.createElement('p');
-    p.className = 'f-msg-line';
-    p.textContent = line;
+    p.className = 'f-msg-line f-typing';
+    p.textContent = '';
     container.appendChild(p);
     
-    setTimeout(() => {
-      p.classList.add('f-visible');
-      // Auto scroll down smoothly into the section container as text appears
-      p.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, delay);
+    await typeWriterEffect(p, line, 50);
+    p.classList.remove('f-typing');
     
-    // Add extra pause for effect on longer lines or ellipses
     if (line.includes('…') || line.includes('❤️')) {
-      delay += 2500;
+      await sleep(1500);
     } else {
-      delay += 1800;
+      await sleep(800);
     }
-  });
+  }
 
   // Reveal buttons exactly at the end
-  setTimeout(() => {
-    const actionBtns = document.getElementById('futureActionBtns');
-    if (actionBtns) {
-      actionBtns.classList.remove('hidden');
-      actionBtns.style.opacity = '0';
-      actionBtns.style.transition = 'opacity 2s ease';
-      
-      void actionBtns.offsetWidth;
-      actionBtns.style.opacity = '1';
-      actionBtns.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
-  }, delay + 1000);
+  const actionBtns = document.getElementById('futureActionBtns');
+  if (actionBtns) {
+    actionBtns.classList.remove('hidden');
+    actionBtns.style.opacity = '0';
+    actionBtns.style.transition = 'opacity 2s ease';
+    
+    void actionBtns.offsetWidth;
+    actionBtns.style.opacity = '1';
+    actionBtns.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }
 }
