@@ -2707,6 +2707,7 @@ body::before {
 
 .future-preview-frame {
   width: 200px;
+  max-width: 100%;
   height: 200px;
   margin: 2rem auto;
   border-radius: 20px;
@@ -2714,11 +2715,16 @@ body::before {
   box-shadow: 0 0 30px rgba(255,102,178,0.5), inset 0 0 20px rgba(255,255,255,0.2);
   overflow: hidden;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   animation: glowPulse 2s infinite alternate;
 }
 #futurePhotoPreview {
   width: 100%;
   height: 100%;
+  max-width: 200px;
+  max-height: 200px;
   object-fit: cover;
   display: block;
 }
@@ -2787,19 +2793,23 @@ body::before {
 .future-message-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 2rem;
   padding: 4rem 1rem 12rem 1rem;
-  max-width: 600px;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
 }
 .f-msg-line {
   font-family: var(--font-main);
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.5;
   color: #fff;
   text-align: center;
-  text-shadow: 0 0 10px #ff66b2, 0 0 20px #d4a5ff;
+  width: 100%;
+  text-shadow: 0 0 10px rgba(255,102,178,0.9), 0 0 20px rgba(212,165,255,0.8);
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 2.5s ease, transform 2.5s ease;
