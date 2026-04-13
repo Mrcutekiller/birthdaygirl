@@ -1441,8 +1441,8 @@ function triggerFutureReveal() {
     
     setTimeout(() => {
       p.classList.add('f-visible');
-      // Auto scroll down smoothly as text appears
-      window.scrollBy({ top: 40, behavior: 'smooth' });
+      // Auto scroll down smoothly into the section container as text appears
+      p.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, delay);
     
     // Add extra pause for effect on longer lines or ellipses

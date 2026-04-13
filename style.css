@@ -2799,20 +2799,22 @@ body::before {
 .future-message-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: 2rem 1rem;
+  gap: 2rem;
+  padding: 4rem 1rem 12rem 1rem;
   max-width: 600px;
   margin: 0 auto;
 }
 .f-msg-line {
-  font-family: var(--font-script);
-  font-size: 1.6rem;
-  color: var(--pink-900);
+  font-family: var(--font-main);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #fff;
   text-align: center;
-  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+  text-shadow: 0 0 10px #ff66b2, 0 0 20px #d4a5ff;
   opacity: 0;
-  transform: translateY(15px);
-  transition: opacity 2s ease, transform 2s ease;
+  transform: translateY(20px);
+  transition: opacity 2.5s ease, transform 2.5s ease;
 }
 .f-msg-line.f-visible {
   opacity: 1;
