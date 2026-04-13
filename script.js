@@ -424,30 +424,26 @@ function initHorizontalTimeline() {
     node.setAttribute('aria-label', 'Age ' + age);
     node.innerHTML = `<div class="htl-dot"></div><span class="htl-label">${age}</span>`;
     node.addEventListener('click', () => {
-      clearInterval(htlAutoTimer); // manual tap stops auto-play
+      clearInterval(htlAutoTimer);
       htlSelectAge(age);
+      playAgeChime(age);
     });
     track.appendChild(node);
   }
 
-  // Auto-play: start at 0 after a short pause, advance every 2500ms
-  let current = -1;
+  // Auto-play: 0 → 19 at 1.5 s each — fast enough to feel alive, slow enough to read
+  let current = 0;
   setTimeout(() => {
-    current = 0;
     htlSelectAge(current);
     playAgeChime(current);
 
     htlAutoTimer = setInterval(() => {
       current++;
-      if (current > 19) {
-        clearInterval(htlAutoTimer); // finished — stop
-        return;
-      }
+      if (current > 19) { clearInterval(htlAutoTimer); return; }
       htlSelectAge(current);
       playAgeChime(current);
-    }, 2500);     // ← 2.5 seconds per age — readable & relaxed
-  }, 500);
-
+    }, 1500);
+  }, 350);
 }
 
 function htlSelectAge(age) {
@@ -459,42 +455,65 @@ function htlSelectAge(age) {
 
   if (!card || !msg) return;
 
-  // Update active dot
+  // --- Smooth dot activation ---
   document.querySelectorAll('.htl-node').forEach(n => {
     n.classList.toggle('active', parseInt(n.dataset.age) === age);
   });
 
-  // Scroll selected dot to centre
+  // Scroll active dot into centre of the track
   const activeNode = document.querySelector(`.htl-node[data-age="${age}"]`);
   if (activeNode) {
     activeNode.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
 
-  // Update card content
-  ageEl.textContent  = msg.label;
-  textEl.textContent = msg.text;
-
-  // Special glow for age 19
-  if (glowEl) glowEl.className = age === 19 ? 'htl-msg-glow glow-19' : 'htl-msg-glow';
-
-  // Show card with re-animation
+  // --- Crossfade text: fade out → update → fade in ---
   card.classList.remove('hidden');
-  card.style.animation = 'none';
-  void card.offsetWidth;
-  card.style.animation = '';
 
-  // Age 19 = confetti burst 🎉
+  const fadeOut = () => {
+    ageEl.style.transition  = 'opacity 0.18s ease';
+    textEl.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+    ageEl.style.opacity     = '0';
+    textEl.style.opacity    = '0';
+    textEl.style.transform  = 'translateY(6px)';
+  };
+
+  const updateContent = () => {
+    ageEl.textContent  = msg.label;
+    textEl.textContent = msg.text;
+    if (glowEl) glowEl.className = age === 19 ? 'htl-msg-glow glow-19' : 'htl-msg-glow';
+  };
+
+  const fadeIn = () => {
+    ageEl.style.opacity    = '1';
+    textEl.style.opacity   = '1';
+    textEl.style.transform = 'translateY(0)';
+  };
+
+  // First visit — no content yet, just show instantly
+  if (!ageEl.textContent || ageEl.textContent === 'Age 0' && age === 0) {
+    updateContent();
+    ageEl.style.opacity  = '0';
+    textEl.style.opacity = '0';
+    textEl.style.transform = 'translateY(8px)';
+    requestAnimationFrame(() => requestAnimationFrame(() => fadeIn()));
+  } else {
+    fadeOut();
+    setTimeout(() => { updateContent(); fadeIn(); }, 190);
+  }
+
+  // Age 19 special 🎉
   if (age === 19) {
-    launchConfetti(true);
+    setTimeout(() => launchConfetti(true), 300);
   }
 }
 
 function htlScroll(dir) {
-  clearInterval(htlAutoTimer); // manual arrow = stop auto-play
+  clearInterval(htlAutoTimer);
   const scroll = document.getElementById('htlScroll');
   if (!scroll) return;
-  scroll.scrollBy({ left: dir * 200, behavior: 'smooth' });
+  scroll.scrollBy({ left: dir * 220, behavior: 'smooth' });
 }
+
 
 /* ============================================================
    BIRTHDAY CAKE — BLOW CANDLE
