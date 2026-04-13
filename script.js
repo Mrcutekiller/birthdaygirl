@@ -352,6 +352,59 @@ const HTL_MESSAGES = {
 let htlInited    = false;
 let htlAutoTimer = null;   // holds the interval so we can cancel it
 
+/* ---- Web Audio chime generator (no external files needed) ---- */
+let htlAudioCtx = null;
+
+function getAudioCtx() {
+  if (!htlAudioCtx || htlAudioCtx.state === 'closed') {
+    htlAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  // Resume if suspended (browser autoplay policy)
+  if (htlAudioCtx.state === 'suspended') htlAudioCtx.resume();
+  return htlAudioCtx;
+}
+
+function playAgeChime(age) {
+  try {
+    const ctx = getAudioCtx();
+
+    // Base frequency rises from C4 (262Hz) up two octaves over 20 steps
+    const baseFreq = 262 * Math.pow(2, age / 19);  // 262 → ~524 Hz
+
+    if (age === 19) {
+      // Special: gentle three-note chord — root, major third, fifth
+      [1, 1.26, 1.5].forEach((ratio, i) => {
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type      = 'sine';
+        osc.frequency.value = baseFreq * ratio;
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.8);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.06);
+        osc.stop(ctx.currentTime + 3.0);
+      });
+    } else {
+      // Single soft bell tone
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type      = 'sine';
+      osc.frequency.value = baseFreq;
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.6);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 1.8);
+    }
+  } catch (e) {
+    // Web Audio not supported — silently skip
+  }
+}
+
 function initHorizontalTimeline() {
   const track = document.getElementById('htlTrack');
   if (!track) return;
@@ -377,12 +430,12 @@ function initHorizontalTimeline() {
     track.appendChild(node);
   }
 
-  // Auto-play: start at 0 after a short pause, advance every 900ms
+  // Auto-play: start at 0 after a short pause, advance every 2500ms
   let current = -1;
   setTimeout(() => {
-    // First tick immediately
     current = 0;
     htlSelectAge(current);
+    playAgeChime(current);
 
     htlAutoTimer = setInterval(() => {
       current++;
@@ -391,8 +444,10 @@ function initHorizontalTimeline() {
         return;
       }
       htlSelectAge(current);
-    }, 900);
-  }, 400); // 400ms lead-in before age 0 appears
+      playAgeChime(current);
+    }, 2500);     // ← 2.5 seconds per age — readable & relaxed
+  }, 500);
+
 }
 
 function htlSelectAge(age) {
