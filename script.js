@@ -888,26 +888,26 @@ const MEMORIES = [
   {
     img:     'images/pic2.jpg',
     emoji:   '✨',
-    title:   'The moment I knew',
-    caption: 'The moment I realized you\'re special ✨ — it hit me quietly, like all the best things do.',
+    title:   'Looking absolutely gorgeous',
+    caption: 'Looking absolutely gorgeous ✨ — honestly, my favorite view in the whole world.',
   },
   {
     img:     'images/pic3.jpg',
-    emoji:   '😂',
-    title:   'Our best moment',
-    caption: 'Our best moment 😂 — I don\'t think I\'ve ever laughed that hard with anyone else. That laugh is mine to keep.',
+    emoji:   '💖',
+    title:   'Your beautiful smile',
+    caption: 'Your beautiful smile 💖 — it changes my whole mood instantly and lights up any room.',
   },
   {
     img:     'images/pic4.jpg',
-    emoji:   '💖',
-    title:   'You being cute for no reason',
-    caption: 'You being cute for no reason 💖 — honestly just existing and being you is enough to make my whole day.',
+    emoji:   '🌸',
+    title:   'You being effortlessly cute',
+    caption: 'You being effortlessly cute 🌸 — literally just existing and being you is enough to make my day.',
   },
   {
     img:     'images/pic5.jpg',
-    emoji:   '🌙',
-    title:   'Late night conversations',
-    caption: 'Those nights we talked until the world went quiet 🌙 — time stopped mattering whenever it was us.',
+    emoji:   '👑',
+    title:   'The most stunning girl',
+    caption: 'The most stunning girl in the world 👑 — inside and out, you never cease to amaze me.',
   },
 ];
 
@@ -1204,19 +1204,13 @@ document.addEventListener('keydown', (e) => {
    INIT ON DOM READY
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
-  // Spawn hearts & stars straight away so landing screen feels alive
-  initHearts();
-  initStars();
+  createFloatingHearts();
+  
+  // Create stars for the landing background
+  createLandingStars();
 
-  // Pre-init carousel dots and other lightweight things
-  initCarouselDots();
-  initMemorySwipe();
-  initVibeEmojis();
-  startCarouselTimer();
-  initMusic();
-
-  // Scroll-based nav highlight (no-op now without nav bar)
-  window.addEventListener('scroll', () => {});
+  // Show "write your own message" if any exists from past visits
+  displaySavedMessages();
 });
 
 /* ============================================================
