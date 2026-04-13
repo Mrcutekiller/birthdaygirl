@@ -65,6 +65,11 @@ function enterSite() {
    SECTION NAVIGATION
    ============================================================ */
 function showSection(name) {
+  // Cancel timeline auto-play if leaving that section mid-run
+  if (currentSection === 'timeline' && name !== 'timeline') {
+    clearInterval(htlAutoTimer);
+  }
+
   // Hide all sections
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
 
@@ -77,11 +82,6 @@ function showSection(name) {
 
   currentSection = name;
 
-  // Section-specific init
-  if (name === 'timeline') {
-    setTimeout(animateTimelineItems, 200);
-  }
-
   // Auto-start typewriter when entering letter
   if (name === 'letter') {
     setTimeout(startTypewriter, 400);
@@ -93,7 +93,7 @@ function showSection(name) {
     setTimeout(initMemorySwipe, 200);
   }
 
-  // Init horizontal timeline on visit
+  // Horizontal timeline — always (re)starts the 0→19 auto-play
   if (name === 'timeline') {
     setTimeout(initHorizontalTimeline, 200);
   }
@@ -349,15 +349,19 @@ const HTL_MESSAGES = {
   19: { label: 'Age 19', text: 'Nuhamin at her most beautiful ✨' },
 };
 
-let htlInited = false;
+let htlInited    = false;
+let htlAutoTimer = null;   // holds the interval so we can cancel it
 
 function initHorizontalTimeline() {
   const track = document.getElementById('htlTrack');
   if (!track) return;
 
-  // Only rebuild if needed
+  // Rebuild dots every time (so reset on revisit works)
   track.innerHTML = '';
   htlInited = true;
+
+  // Stop any running auto-play from a previous visit
+  clearInterval(htlAutoTimer);
 
   // Create a node for each age 0–19
   for (let age = 0; age <= 19; age++) {
@@ -366,18 +370,35 @@ function initHorizontalTimeline() {
     node.dataset.age = age;
     node.setAttribute('aria-label', 'Age ' + age);
     node.innerHTML = `<div class="htl-dot"></div><span class="htl-label">${age}</span>`;
-    node.addEventListener('click', () => htlSelectAge(age));
+    node.addEventListener('click', () => {
+      clearInterval(htlAutoTimer); // manual tap stops auto-play
+      htlSelectAge(age);
+    });
     track.appendChild(node);
   }
 
-  // Auto-select age 19 after a moment for wow effect
-  setTimeout(() => htlSelectAge(19), 600);
+  // Auto-play: start at 0 after a short pause, advance every 900ms
+  let current = -1;
+  setTimeout(() => {
+    // First tick immediately
+    current = 0;
+    htlSelectAge(current);
+
+    htlAutoTimer = setInterval(() => {
+      current++;
+      if (current > 19) {
+        clearInterval(htlAutoTimer); // finished — stop
+        return;
+      }
+      htlSelectAge(current);
+    }, 900);
+  }, 400); // 400ms lead-in before age 0 appears
 }
 
 function htlSelectAge(age) {
-  const msg   = HTL_MESSAGES[age];
-  const card  = document.getElementById('htlCard');
-  const ageEl = document.getElementById('htlMsgAge');
+  const msg    = HTL_MESSAGES[age];
+  const card   = document.getElementById('htlCard');
+  const ageEl  = document.getElementById('htlMsgAge');
   const textEl = document.getElementById('htlMsgText');
   const glowEl = document.getElementById('htlMsgGlow');
 
@@ -407,13 +428,14 @@ function htlSelectAge(age) {
   void card.offsetWidth;
   card.style.animation = '';
 
-  // Age 19 = confetti + hearts
+  // Age 19 = confetti burst 🎉
   if (age === 19) {
     launchConfetti(true);
   }
 }
 
 function htlScroll(dir) {
+  clearInterval(htlAutoTimer); // manual arrow = stop auto-play
   const scroll = document.getElementById('htlScroll');
   if (!scroll) return;
   scroll.scrollBy({ left: dir * 200, behavior: 'smooth' });
