@@ -1353,6 +1353,29 @@ const FUTURE_LINES = [
   "It looks like… us ✨"
 ];
 
+function startTimeWarp(textEl, message) {
+  textEl.textContent = message;
+  const yearEl = document.getElementById('futureYearCounter');
+  let currentYear = new Date().getFullYear();
+  yearEl.textContent = currentYear;
+  yearEl.style.fontSize = "3.5rem"; // Reset size just in case
+  
+  const targetYear = currentYear + 65; 
+  let yearInterval = setInterval(() => {
+    currentYear += Math.floor(Math.random() * 4) + 1;
+    if (currentYear > targetYear) {
+      clearInterval(yearInterval);
+      yearEl.textContent = "Forever ❤️";
+      yearEl.style.fontSize = "2.4rem";
+      textEl.textContent = "Destination reached...";
+    } else {
+      yearEl.textContent = currentYear;
+    }
+  }, 60);
+
+  setTimeout(triggerFutureReveal, 5000);
+}
+
 function startFingerprint() {
   document.getElementById('futureChoiceView').classList.add('hidden');
   const scanView = document.getElementById('futureScanningView');
@@ -1363,9 +1386,8 @@ function startFingerprint() {
   scanView.classList.remove('hidden');
   fpIcon.classList.remove('hidden');
   photoIcon.classList.add('hidden');
-  text.textContent = "Analyzing fingerprint...";
   
-  setTimeout(triggerFutureReveal, 3500);
+  startTimeWarp(text, "Scanning & analyzing timeline...");
 }
 
 function handleFuturePhoto(e) {
@@ -1380,9 +1402,8 @@ function handleFuturePhoto(e) {
   scanView.classList.remove('hidden');
   fpIcon.classList.add('hidden');
   photoIcon.classList.remove('hidden');
-  text.textContent = "Reading your future...";
   
-  setTimeout(triggerFutureReveal, 3500);
+  startTimeWarp(text, "Processing timeline...");
 }
 
 function triggerFutureReveal() {
