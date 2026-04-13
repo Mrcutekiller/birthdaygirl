@@ -1352,11 +1352,58 @@ function handleFuturePhoto(e) {
     
     scanView.classList.remove('hidden');
     
-    // Delay 4 seconds then reveal
-    setTimeout(triggerFutureReveal, 4000);
+    // Delay 2 seconds for initial processing state, then run full analysis
+    setTimeout(triggerAnalysisScene, 2000);
   };
   
   reader.readAsDataURL(file);
+}
+
+function triggerAnalysisScene() {
+  document.getElementById('futureScanningView').classList.add('hidden');
+  const analysisScene = document.getElementById('futureAnalysisScene');
+  analysisScene.classList.remove('hidden');
+  
+  const textContainer = document.getElementById('analysisTextContainer');
+  const dynText = document.getElementById('analysisDynamicText');
+  dynText.innerHTML = "";
+  
+  const analysisPhases = [
+    "Scanning emotional patterns…",
+    "Mapping future timeline…",
+    "Connecting destiny paths…",
+    "Stabilizing future outcome…"
+  ];
+  
+  let phaseIndex = 0;
+  const phaseInterval = setInterval(() => {
+    dynText.style.animation = 'none';
+    dynText.offsetHeight; // trigger reflow
+    dynText.style.animation = 'txtFadeUp 1s ease forwards';
+    dynText.textContent = analysisPhases[phaseIndex];
+    
+    phaseIndex++;
+    if (phaseIndex >= analysisPhases.length) {
+      clearInterval(phaseInterval);
+    }
+  }, 1500);
+
+  const yearOverlay = document.getElementById('futureYearOverlay');
+  let currentYear = 2026;
+  const targetYear = 2050;
+  
+  const yearInterval = setInterval(() => {
+    currentYear += Math.floor(Math.random() * 3) + 1;
+    if (currentYear >= targetYear) {
+      yearOverlay.textContent = targetYear;
+      clearInterval(yearInterval);
+    } else {
+      yearOverlay.textContent = currentYear;
+    }
+  }, 100);
+
+  // Transition to FINAL MESSAGE after 6 seconds
+  setTimeout(triggerFutureReveal, 6000);
 }
 
 function resetFuture() {
@@ -1369,6 +1416,7 @@ function resetFuture() {
 
 function triggerFutureReveal() {
   document.getElementById('futureScanningView').classList.add('hidden');
+  document.getElementById('futureAnalysisScene').classList.add('hidden');
   document.getElementById('futureResultView').classList.remove('hidden');
   
   const container = document.getElementById('futureMessageContainer');
