@@ -1344,6 +1344,18 @@ const FUTURE_LINES = [
   "They are shared ✨"
 ];
 
+const FINAL_FUTURE_LINES = [
+  "Nuhamin… 💖",
+  "No matter how time moves…",
+  "No matter how the world changes…",
+  "Some things stay real.",
+  "And what I feel for you…",
+  "is one of them.",
+  "This is not just a moment…",
+  "This is something that continues…",
+  "Always."
+];
+
 function handleFuturePhoto(e) {
   if (!e.target.files || e.target.files.length === 0) return;
   
@@ -1422,7 +1434,77 @@ function triggerFutureReveal() {
     }
   });
 
-  // Unhide buttons slightly after the final message appears
+  // Instead of unhiding buttons here, we launch Phase 2 (Time Evolution)
+  setTimeout(triggerTimeEvolution, delay + 1000);
+}
+
+function triggerTimeEvolution() {
+  document.getElementById('futureMessageContainer').classList.add('hidden');
+  const timeScene = document.getElementById('futureTimeEvolution');
+  timeScene.classList.remove('hidden');
+  
+  const yearEl = document.getElementById('timeEvolveCounter');
+  let currentYear = 2026;
+  const targetYear = 2050;
+  
+  let roll = setInterval(() => {
+    currentYear += Math.floor(Math.random() * 3) + 1;
+    if (currentYear >= targetYear) {
+      clearInterval(roll);
+      yearEl.textContent = targetYear;
+    } else {
+      yearEl.textContent = currentYear;
+    }
+  }, 100);
+
+  // Transition to Phase 3 (Earth Scene) after 4.5 seconds
+  setTimeout(triggerEarthScene, 4500);
+}
+
+function triggerEarthScene() {
+  document.getElementById('futureTimeEvolution').classList.add('hidden');
+  const earthScene = document.getElementById('futureEarthScene');
+  earthScene.classList.remove('hidden');
+
+  // Second line of text in Earth scene
+  setTimeout(() => {
+    document.getElementById('earthText2').classList.remove('hidden');
+  }, 3000);
+
+  // Transition to Phase 4 (Final Reveal)
+  setTimeout(triggerFinalReveal, 7000);
+}
+
+function triggerFinalReveal() {
+  document.getElementById('futureEarthScene').classList.add('hidden');
+  
+  const finalReveal = document.getElementById('futureFinalReveal');
+  finalReveal.classList.remove('hidden');
+  
+  const finalContainer = document.getElementById('finalMessageContainer');
+  finalContainer.innerHTML = '';
+  
+  let delay = 500;
+  
+  FINAL_FUTURE_LINES.forEach((line) => {
+    const p = document.createElement('p');
+    p.className = 'f-msg-line';
+    p.textContent = line;
+    finalContainer.appendChild(p);
+    
+    setTimeout(() => {
+      p.classList.add('f-visible');
+      p.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, delay);
+    
+    if (line.includes('…') || line.includes('💖')) {
+      delay += 2500;
+    } else {
+      delay += 1800;
+    }
+  });
+
+  // Reveal buttons at the absolute end
   setTimeout(() => {
     const actionBtns = document.getElementById('futureActionBtns');
     if (actionBtns) {
@@ -1430,7 +1512,6 @@ function triggerFutureReveal() {
       actionBtns.style.opacity = '0';
       actionBtns.style.transition = 'opacity 2s ease';
       
-      // Trigger reflow
       void actionBtns.offsetWidth;
       actionBtns.style.opacity = '1';
       actionBtns.scrollIntoView({ behavior: 'smooth', block: 'end' });

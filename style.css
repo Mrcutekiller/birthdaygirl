@@ -2807,6 +2807,95 @@ body::before {
 .f-msg-line.f-visible {
   opacity: 1;
   transform: translateY(0);
+.future-time-evolution, 
+.future-earth-scene, 
+.future-final-reveal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  width: 100%;
+  animation: slowFadeIn 2s ease forwards;
+}
+
+.time-evolve-counter {
+  font-family: var(--font-main);
+  font-size: 5rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 20px #a1c4fd, 0 0 40px #d4a5ff;
+  letter-spacing: 10px;
+  margin-bottom: 2rem;
+  animation: subtlePulse 2s infinite alternate;
+}
+
+.cinematic-subtext {
+  font-family: var(--font-main);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255,102,178,0.8);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: revealUp 3s ease 1s forwards;
+}
+
+.earth-realm {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin-bottom: 3rem;
+  border-radius: 50%;
+  perspective: 1200px;
+}
+
+.earth-sphere {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #a1c4fd 0%, #1e3c72 60%, #000 100%);
+  box-shadow: 0 0 50px rgba(161, 196, 253, 0.4), inset -20px -20px 40px rgba(0,0,0,0.8);
+  animation: earthRotate 20s linear infinite;
+  overflow: hidden;
+}
+
+.earth-sphere::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.4) 1px, transparent 2%);
+  background-size: 50px 50px;
+  opacity: 0.5;
+  animation: earthStars 10s linear infinite;
+}
+
+.earth-shadow {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 70% 70%, transparent 40%, rgba(0,0,0,0.8) 80%);
+  pointer-events: none;
+}
+
+@keyframes slowFadeIn {
+  from { opacity: 0; filter: blur(10px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+@keyframes earthRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes earthStars {
+  0% { background-position: 0 0; }
+  100% { background-position: -50px 50px; }
+}
+
+@keyframes revealUp {
+  to { opacity: 1; transform: translateY(0); }
 }
 }
 
