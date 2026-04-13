@@ -1423,7 +1423,7 @@ function triggerFutureReveal() {
   container.innerHTML = '';
   
   // Bring out the stars and a soft chime
-  createFloatingHearts();
+  burstHearts();
   try {
     const ctx = getAudioCtx();
     const osc = ctx.createOscillator();
