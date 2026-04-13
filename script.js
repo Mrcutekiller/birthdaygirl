@@ -98,6 +98,12 @@ function showSection(name) {
     setTimeout(initHorizontalTimeline, 200);
   }
 
+  // 19 Reasons Grid init
+  if (name === 'reasons') {
+    initReasonsGrid();
+  }
+
+
   // Reset gift box on revisit
   if (name === 'gift') {
     giftOpened = false;
@@ -1204,3 +1210,104 @@ document.addEventListener('DOMContentLoaded', () => {
   // Scroll-based nav highlight (no-op now without nav bar)
   window.addEventListener('scroll', () => {});
 });
+
+/* ============================================================
+   19 REASONS FLIP CARDS
+   ============================================================ */
+const REASONS = [
+  "The way your eyes light up when you're excited.",
+  "Your laugh—it's my favorite sound in the whole world.",
+  "How kind you are, even when people don't deserve it.",
+  "The way you make ordinary moments feel magical.",
+  "How perfectly you fit in my arms.",
+  "Your determination and the way you chase your dreams.",
+  "The cute little faces you make when you're concentrating.",
+  "How safe and completely at home I feel with you.",
+  "The way you care so deeply about the people you love.",
+  "Your intelligence and the beautiful way your mind works.",
+  "Getting lost in conversations with you for hours.",
+  "Your smile, which can instantly turn my worst days around.",
+  "How you always know exactly what to say when I need comfort.",
+  "The specific, beautiful way you look at me.",
+  "Your sense of humor and all our inside jokes.",
+  "The beautiful soul that shines through everything you do.",
+  "The soft, gentle way you hold my hand.",
+  "How you inspire me to be a better person every single day.",
+  "Because you are Nuhamin, and there's no one else like you."
+];
+
+let reasonsFlipped = 0;
+let reasonsInited = false;
+
+function initReasonsGrid() {
+  if (reasonsInited) return; // only build once to preserve state
+  
+  const grid = document.getElementById('reasonsGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '';
+  reasonsFlipped = 0;
+  
+  const countEl = document.getElementById('reasonsCount');
+  const finalEl = document.getElementById('reasonsFinal');
+  if (countEl) countEl.textContent = `0/19`;
+  if (finalEl) finalEl.classList.add('hidden');
+
+  REASONS.forEach((text, i) => {
+    const num = i + 1;
+    const card = document.createElement('div');
+    card.className = 'reason-card';
+    card.dataset.num = num;
+    
+    card.innerHTML = `
+      <div class="reason-inner">
+        <div class="reason-front">
+          <span class="rf-num">${num}</span>
+          <span class="rf-icon">💌</span>
+        </div>
+        <div class="reason-back">
+          ${text}
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener('click', function() {
+      if (!this.classList.contains('flipped')) {
+        this.classList.add('flipped');
+        reasonsFlipped++;
+        if (countEl) countEl.textContent = `${reasonsFlipped}/19`;
+        
+        // Soft pop sound
+        try {
+          const ctx = getAudioCtx();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = 600 + (reasonsFlipped * 40);
+          gain.gain.setValueAtTime(0, ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.4);
+        } catch(e) {}
+
+        if (reasonsFlipped === 19) {
+          setTimeout(() => {
+            launchConfetti(true);
+            if (finalEl) {
+              finalEl.classList.remove('hidden');
+              finalEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }, 600);
+        }
+      }
+    });
+
+    grid.appendChild(card);
+  });
+  
+  reasonsInited = true;
+}
+

@@ -134,6 +134,11 @@
               <span class="mbtn-arrow">›</span>
             </button>
 
+            <button class="menu-btn" id="mbtn-reasons" onclick="showSection('reasons')">
+              <span class="mbtn-icon">💌</span>
+              <span class="mbtn-label">19 Reasons Why</span>
+              <span class="mbtn-arrow">›</span>
+            </button>
 
           </div><!-- /.menu-card-inner -->
 
@@ -424,6 +429,27 @@
           </div>
         </div>
 
+      </div>
+    </section>
+
+    <!-- ===== 19 REASONS SECTION ===== -->
+    <section class="section" id="section-reasons">
+      <div class="section-inner" style="max-width: 900px;">
+        <button class="btn-back" onclick="showSection('home')">← Back to Menu</button>
+        <div class="section-header">
+          <div class="section-icon">💫</div>
+          <h2 class="section-title">19 Reasons Why</h2>
+          <p class="section-sub">Tap to open each one. Find all 19! <span id="reasonsCount">0/19</span></p>
+        </div>
+        
+        <div class="reasons-grid" id="reasonsGrid">
+          <!-- JS will insert 19 flip cards here -->
+        </div>
+
+        <div id="reasonsFinal" class="reasons-final hidden">
+          <h3 class="secret-final" style="text-align:center; font-size: 2rem !important; margin-bottom:1rem;">And the 20th reason...</h3>
+          <p style="text-align:center; font-size:1.3rem; font-family:var(--font-script);">...is simply that you are Nuhamin. And there is no one else in the world quite like you. 💖</p>
+        </div>
       </div>
     </section>
 
