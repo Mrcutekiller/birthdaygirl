@@ -103,6 +103,14 @@ function showSection(name) {
     initReasonsGrid();
   }
 
+  // Future Section Reset
+  if (name === 'future') {
+    document.getElementById('futureChoiceView').classList.remove('hidden');
+    document.getElementById('futureScanningView').classList.add('hidden');
+    document.getElementById('futureResultView').classList.add('hidden');
+  }
+
+
 
   // Reset gift box on revisit
   if (name === 'gift') {
@@ -1309,5 +1317,117 @@ function initReasonsGrid() {
   });
   
   reasonsInited = true;
+
+/* ============================================================
+   SEE YOUR FUTURE 🔮
+   ============================================================ */
+const FUTURE_LINES = [
+  "Nuhamin… 💖",
+  "I looked into your future…",
+  "And something beautiful showed up.",
+  "I see you… smiling.",
+  "Not just any smile…",
+  "The kind of smile you only give when you feel safe… when you feel loved.",
+  "I see a peaceful moment…",
+  "A quiet room… soft light… and you sitting there, happy.",
+  "And guess what?",
+  "I’m there too.",
+  "Not far… not watching…",
+  "Right next to you.",
+  "Laughing with you… annoying you a little…",
+  "But never leaving your side.",
+  "I see us growing…",
+  "Through everything.",
+  "The good days… the hard days…",
+  "Still choosing each other every single time.",
+  "And one day…",
+  "It’s not just a dream anymore.",
+  "It’s real.",
+  "You… and me…",
+  "Together.",
+  "Not just for a moment…",
+  "But for a lifetime ❤️",
+  "So if you were wondering what your future looks like…",
+  "Now you know.",
+  "It looks like… us ✨"
+];
+
+function startFingerprint() {
+  document.getElementById('futureChoiceView').classList.add('hidden');
+  const scanView = document.getElementById('futureScanningView');
+  const fpIcon = document.getElementById('fingerprintScanner');
+  const photoIcon = document.getElementById('photoScanner');
+  const text = document.getElementById('scanningText');
+  
+  scanView.classList.remove('hidden');
+  fpIcon.classList.remove('hidden');
+  photoIcon.classList.add('hidden');
+  text.textContent = "Analyzing fingerprint...";
+  
+  setTimeout(triggerFutureReveal, 3500);
 }
 
+function handleFuturePhoto(e) {
+  if (!e.target.files || e.target.files.length === 0) return;
+  
+  document.getElementById('futureChoiceView').classList.add('hidden');
+  const scanView = document.getElementById('futureScanningView');
+  const fpIcon = document.getElementById('fingerprintScanner');
+  const photoIcon = document.getElementById('photoScanner');
+  const text = document.getElementById('scanningText');
+  
+  scanView.classList.remove('hidden');
+  fpIcon.classList.add('hidden');
+  photoIcon.classList.remove('hidden');
+  text.textContent = "Reading your future...";
+  
+  setTimeout(triggerFutureReveal, 3500);
+}
+
+function triggerFutureReveal() {
+  document.getElementById('futureScanningView').classList.add('hidden');
+  document.getElementById('futureResultView').classList.remove('hidden');
+  
+  const container = document.getElementById('futureMessageContainer');
+  container.innerHTML = '';
+  
+  // Bring out the stars and a soft chime
+  createFloatingHearts();
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(880, ctx.currentTime + 2);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 1);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 4);
+  } catch(e) {}
+  
+  let delay = 500;
+  
+  FUTURE_LINES.forEach((line) => {
+    const p = document.createElement('p');
+    p.className = 'f-msg-line';
+    p.textContent = line;
+    container.appendChild(p);
+    
+    setTimeout(() => {
+      p.classList.add('f-visible');
+      // Auto scroll down smoothly as text appears
+      window.scrollBy({ top: 40, behavior: 'smooth' });
+    }, delay);
+    
+    // Add extra pause for effect on longer lines or ellipses
+    if (line.includes('…') || line.includes('❤️')) {
+      delay += 2500;
+    } else {
+      delay += 1800;
+    }
+  });
+}

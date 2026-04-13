@@ -2655,7 +2655,132 @@ body::before {
   animation: glowPulse 2s infinite alternate;
 }
 
+
+/* ============================================================
+   SEE YOUR FUTURE 🔮
+   ============================================================ */
+.future-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  margin-top: 2rem;
 }
+
+.future-btn {
+  width: 100%;
+  max-width: 300px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.future-btn:hover {
+  transform: translateY(-5px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(200, 100, 255, 0.4);
+  border-color: rgba(255,255,255,0.8);
+}
+.future-icon {
+  font-size: 3rem;
+  text-shadow: 0 0 15px rgba(255,255,255,0.5);
+}
+.future-text {
+  font-family: var(--font-main);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--pink-900);
+}
+
+.fingerprint-scanner {
+  position: relative;
+  width: 120px;
+  height: 150px;
+  margin: 3rem auto;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+}
+.fp-icon {
+  font-size: 5rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.5;
+}
+.fp-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #ff66b2;
+  box-shadow: 0 0 15px 5px rgba(255, 102, 178, 0.8);
+}
+.line-anim {
+  animation: scanLine 1.5s linear infinite alternate;
+}
+@keyframes scanLine {
+  0% { top: 5%; }
+  100% { top: 90%; }
+}
+
+.photo-scanner {
+  margin: 3rem auto;
+  display: flex;
+  justify-content: center;
+}
+.ps-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(255,255,255,0.3);
+  border-top-color: #ff66b2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.scanning-text {
+  text-align: center;
+  font-family: var(--font-script);
+  font-size: 2rem;
+  color: var(--pink-700);
+  animation: glowPulse 1.5s infinite alternate;
+}
+
+.future-message-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.f-msg-line {
+  font-family: var(--font-script);
+  font-size: 1.6rem;
+  color: var(--pink-900);
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255,255,255,0.8);
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 2s ease, transform 2s ease;
+}
+.f-msg-line.f-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+}
+
 
 @media (max-width: 480px) {
   .wishes-grid  { grid-template-columns: 1fr; }

@@ -140,6 +140,12 @@
               <span class="mbtn-arrow">›</span>
             </button>
 
+            <button class="menu-btn" id="mbtn-future" onclick="showSection('future')">
+              <span class="mbtn-icon">🔮</span>
+              <span class="mbtn-label">See Your Future</span>
+              <span class="mbtn-arrow">›</span>
+            </button>
+
           </div><!-- /.menu-card-inner -->
 
           <!-- Confetti trigger tucked at bottom of card -->
@@ -452,6 +458,53 @@
         </div>
       </div>
     </section>
+
+    <!-- ===== SEE YOUR FUTURE 🔮 ===== -->
+    <section class="section" id="section-future">
+      <div class="section-inner" style="max-width: 800px;">
+        <button class="btn-back" onclick="showSection('home')">← Back to Menu</button>
+        
+        <div id="futureChoiceView" class="future-view">
+          <div class="section-header">
+            <div class="section-icon" style="text-shadow: 0 0 15px rgba(200, 100, 255, 0.8);">🔮</div>
+            <h2 class="section-title">See Your Future</h2>
+            <p class="section-sub">Choose how you want to reveal it...</p>
+          </div>
+          <div class="future-options">
+            <button class="future-btn glass-card" onclick="startFingerprint()">
+              <div class="future-icon">👆</div>
+              <div class="future-text">Scan Your Fingerprint</div>
+            </button>
+            <div style="position: relative;">
+              <input type="file" id="futurePhotoUpload" accept="image/*" class="hidden" onchange="handleFuturePhoto(event)">
+              <button class="future-btn glass-card" onclick="document.getElementById('futurePhotoUpload').click()">
+                <div class="future-icon">📷</div>
+                <div class="future-text">Upload Your Photo</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="futureScanningView" class="future-view hidden">
+          <div class="fingerprint-scanner" id="fingerprintScanner">
+            <div class="fp-icon">👆</div>
+            <div class="fp-line line-anim"></div>
+          </div>
+          <div class="photo-scanner hidden" id="photoScanner">
+            <div class="ps-spinner"></div>
+          </div>
+          <p class="scanning-text" id="scanningText">Analyzing...</p>
+        </div>
+
+        <div id="futureResultView" class="future-view hidden">
+          <div class="future-message-container" id="futureMessageContainer">
+            <!-- Messages added by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
 
     <!-- ===== GALLERY / VIBES SECTION ===== -->
     <section class="section" id="section-gallery">
