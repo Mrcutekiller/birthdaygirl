@@ -576,17 +576,17 @@ function formatTime(seconds) {
 }
 
 function updateMusicWidget(isPlaying) {
-  const wave = document.getElementById('mwWave');
+  const player = document.getElementById('musicWidget');
   const playBtn = document.querySelector('.mw-play');
   const pauseBtn = document.querySelector('.mw-pause');
-  if (!wave || !playBtn || !pauseBtn) return;
+  if (!player || !playBtn || !pauseBtn) return;
   
   if (isPlaying) {
-    wave.classList.add('active');
+    player.classList.add('playing');
     playBtn.classList.add('hidden');
     pauseBtn.classList.remove('hidden');
   } else {
-    wave.classList.remove('active');
+    player.classList.remove('playing');
     playBtn.classList.remove('hidden');
     pauseBtn.classList.add('hidden');
   }
@@ -594,43 +594,37 @@ function updateMusicWidget(isPlaying) {
 
 function initMusic() {
   const audio = document.getElementById('bgMusic');
-  const progressBar = document.getElementById('progress-bar');
-  const progressFill = document.getElementById('progress-fill');
+  const progressContainer = document.getElementById('mwProgress');
+  const progressBar = document.getElementById('mwProgressBar');
   const timeCurrent = document.getElementById('time-current');
-  const timeTotal = document.getElementById('time-total');
-  const volumeBar = document.getElementById('volume-bar');
 
   if (!audio) return;
-
-  // Sync initial volume
-  audio.volume = volumeBar ? volumeBar.value / 100 : 1;
 
   // Progress logic
   audio.addEventListener('timeupdate', () => {
     const percent = (audio.currentTime / audio.duration) * 100;
-    if (progressBar) progressBar.value = percent || 0;
-    if (progressFill) progressFill.style.width = (percent || 0) + '%';
+    if (progressBar) progressBar.style.width = (percent || 0) + '%';
     if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
   });
 
-  audio.addEventListener('loadedmetadata', () => {
-    if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
-  });
-
   // Seek logic
-  if (progressBar) {
-    progressBar.addEventListener('input', () => {
-      const time = (progressBar.value / 100) * audio.duration;
-      audio.currentTime = time;
+  if (progressContainer) {
+    progressContainer.addEventListener('click', (e) => {
+      const rect = progressContainer.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      audio.currentTime = pos * audio.duration;
     });
   }
 
-  // Volume logic
-  if (volumeBar) {
-    volumeBar.addEventListener('input', () => {
-      audio.volume = volumeBar.value / 100;
-    });
-  }
+  // Volume toggle logic (Simplified for pill)
+  window.toggleVolume = () => {
+    if (audio.volume > 0) {
+      audio.dataset.oldVol = audio.volume;
+      audio.volume = 0;
+    } else {
+      audio.volume = audio.dataset.oldVol || 0.7;
+    }
+  };
 
   // Attempt autoplay
   const playPromise = audio.play();
