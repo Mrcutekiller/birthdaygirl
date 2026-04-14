@@ -55,6 +55,7 @@ function enterSite() {
         initCarouselDots();
         startCarouselTimer();
         animateTimelineOnScroll();
+        initMusic();
       }, 80);
 
     }, 480); // reveal app at ~halfway through the 900ms landing fade
@@ -379,44 +380,7 @@ function getAudioCtx() {
 }
 
 function playAgeChime(age) {
-  try {
-    const ctx = getAudioCtx();
-
-    // Base frequency rises from C4 (262Hz) up two octaves over 20 steps
-    const baseFreq = 262 * Math.pow(2, age / 19);  // 262 → ~524 Hz
-
-    if (age === 19) {
-      // Special: gentle three-note chord — root, major third, fifth
-      [1, 1.26, 1.5].forEach((ratio, i) => {
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type      = 'sine';
-        osc.frequency.value = baseFreq * ratio;
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.8);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(ctx.currentTime + i * 0.06);
-        osc.stop(ctx.currentTime + 3.0);
-      });
-    } else {
-      // Single soft bell tone
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type      = 'sine';
-      osc.frequency.value = baseFreq;
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.03);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.6);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 1.8);
-    }
-  } catch (e) {
-    // Web Audio not supported — silently skip
-  }
+  // sound removed
 }
 
 function initHorizontalTimeline() {
@@ -592,21 +556,89 @@ function closeSecretMsg() {
    BACKGROUND MUSIC
    ============================================================ */
 let musicPlaying = false;
-let musicFading  = false;
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return '0:00';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateMusicWidget(isPlaying) {
+  const wave = document.getElementById('mwWave');
+  const playBtn = document.querySelector('.mw-play');
+  const pauseBtn = document.querySelector('.mw-pause');
+  if (!wave || !playBtn || !pauseBtn) return;
+  
+  if (isPlaying) {
+    wave.classList.add('active');
+    playBtn.classList.add('hidden');
+    pauseBtn.classList.remove('hidden');
+  } else {
+    wave.classList.remove('active');
+    playBtn.classList.remove('hidden');
+    pauseBtn.classList.add('hidden');
+  }
+}
 
 function initMusic() {
   const audio = document.getElementById('bgMusic');
-  const btn   = document.getElementById('musicBtn');
+  const progressBar = document.getElementById('progress-bar');
+  const progressFill = document.getElementById('progress-fill');
+  const timeCurrent = document.getElementById('time-current');
+  const timeTotal = document.getElementById('time-total');
+  const volumeBar = document.getElementById('volume-bar');
+
   if (!audio) return;
 
-  audio.volume = 0;
+  // Sync initial volume
+  audio.volume = volumeBar ? volumeBar.value / 100 : 1;
 
-  // Autoplay on first user interaction (browser policy)
+  // Progress logic
+  audio.addEventListener('timeupdate', () => {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    if (progressBar) progressBar.value = percent || 0;
+    if (progressFill) progressFill.style.width = (percent || 0) + '%';
+    if (timeCurrent) timeCurrent.textContent = formatTime(audio.currentTime);
+  });
+
+  audio.addEventListener('loadedmetadata', () => {
+    if (timeTotal) timeTotal.textContent = formatTime(audio.duration);
+  });
+
+  // Seek logic
+  if (progressBar) {
+    progressBar.addEventListener('input', () => {
+      const time = (progressBar.value / 100) * audio.duration;
+      audio.currentTime = time;
+    });
+  }
+
+  // Volume logic
+  if (volumeBar) {
+    volumeBar.addEventListener('input', () => {
+      audio.volume = volumeBar.value / 100;
+    });
+  }
+
+  // Attempt autoplay
+  const playPromise = audio.play();
+  if (playPromise !== undefined) {
+    playPromise.then(() => {
+      musicPlaying = true;
+      updateMusicWidget(true);
+    }).catch(() => {
+      musicPlaying = false;
+      updateMusicWidget(false);
+    });
+  }
+
+  // Fallback for browser autoplay blocks
   const startOnInteraction = () => {
     if (musicPlaying) return;
     audio.play().then(() => {
       musicPlaying = true;
-      fadeAudio(audio, 0, 0.22, 3000); // fade in over 3s to 22% volume
+      updateMusicWidget(true);
       document.removeEventListener('click', startOnInteraction);
       document.removeEventListener('touchstart', startOnInteraction);
     }).catch(() => {});
@@ -618,37 +650,16 @@ function initMusic() {
 
 function toggleMusic() {
   const audio = document.getElementById('bgMusic');
-  const btn   = document.getElementById('musicBtn');
   if (!audio) return;
 
   if (audio.paused) {
     audio.play().catch(() => {});
-    fadeAudio(audio, audio.volume, 0.22, 800);
     musicPlaying = true;
-    if (btn) { btn.textContent = '🎵'; btn.classList.remove('muted'); }
   } else {
-    fadeAudio(audio, audio.volume, 0, 600, () => audio.pause());
+    audio.pause();
     musicPlaying = false;
-    if (btn) { btn.textContent = '🔇'; btn.classList.add('muted'); }
   }
-}
-
-function fadeAudio(audio, from, to, duration, onDone) {
-  const steps    = 40;
-  const interval = duration / steps;
-  const delta    = (to - from) / steps;
-  let   current  = from;
-  let   step     = 0;
-
-  const timer = setInterval(() => {
-    current += delta;
-    step++;
-    audio.volume = Math.min(1, Math.max(0, current));
-    if (step >= steps) {
-      clearInterval(timer);
-      if (onDone) onDone();
-    }
-  }, interval);
+  updateMusicWidget(musicPlaying);
 }
 const HEART_CHARS = ['💖', '💗', '💕', '💓', '💞', '🌸', '✨', '💫', '🌷'];
 
@@ -1286,20 +1297,7 @@ function initReasonsGrid() {
         if (countEl) countEl.textContent = `${reasonsFlipped}/19`;
         
         // Soft pop sound
-        try {
-          const ctx = getAudioCtx();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = 600 + (reasonsFlipped * 40);
-          gain.gain.setValueAtTime(0, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(ctx.currentTime);
-          osc.stop(ctx.currentTime + 0.4);
-        } catch(e) {}
+        /* pop sound removed */
 
         if (reasonsFlipped === 19) {
           setTimeout(() => {
